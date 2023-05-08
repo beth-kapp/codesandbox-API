@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Some Teams</h1>
+
+    <input type="text" id="teams-name" placeholder="Name" />
+    <input type="text" id="teams-sport" placeholder="Sport" />
+    <input type="text" id="teams-location" placeholder="Location" />
+    <input type="text" id="teams-logo" placeholder="Logo" />
+    <button id="submit-team">Submit</button>
+    <p><button id="delete">Delete the first one</button></p>
+    <div id="app"></div>
+
+    <script>
+      //  console.log("hello");
+      document.getElementById("delete").addEventListener("click", function () {
+        // console.log("click");
+        fetch("/api/team", {
+          method: "DELETE"
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Success", data);
+          });
+      });
+
+      document
+        .getElementById("submit-team")
+        .addEventListener("click", function () {
+          const teamName = document.getElementById("teams-name").value; // variables that hold values from fields
+          const teamSport = document.getElementById("teams-sport").value;
+          const teamLocation = document.getElementById("teams-location").value;
+          const teamLogo = document.getElementById("teams-logo").value;
+          // console.log("click", teamName); tests that click event listener is working and
+
+          const data = {
+            // create a javascript object with whatever we saved to variables
+            name: teamName,
+            sport: teamSport,
+            location: teamLocation,
+            logo: teamLogo
+          };
+
+          fetch("/api/team", {
+            // open fetch call to API
+            method: "POST", // or 'PUT'
+            body: JSON.stringify(data) // body that we send turns javascript object into string
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Success:", data);
+            });
+        });
+
+      fetch(`/api/team`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+
+          const teams = data
+            .map((team) => {
+              return `
+            <p>Team Name: ${team.name}</p>
+            <p>Sport: ${team.sport}</p>
+            <p>Location: ${team.location}</p>
+            <img width="100" src="${team.logo}" />`;
+            })
+            .join("");
+          console.log(teams);
+          document.getElementById("app").innerHTML = teams;
+        });
+    </script>
+  </body>
+</html>
